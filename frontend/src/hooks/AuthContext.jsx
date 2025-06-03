@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
 
@@ -7,19 +7,25 @@ export const useAuth = () => {return useContext(AuthContext);}
 
 export const AuthProvider = ({children}) => {
 
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [user, setUser] = useState("");
-    const [token, setToken] = useState("");
-
     const navigate = useNavigate();
+    const [username, setUsername] = useState("");
 
-    const login =async (username, password) => {
+    useEffect(()=>{
+        const token = localStorage.getItem('token');
+        if(token){
+            console.log("Token found");
+        }else{
+            console.log("No token found");
+        }
+    }, []);
+
+
+    const login = async (username, password) => {
         try{
             const response = await axios.post('http://localhost:3000/api/login', {username, password});
             if(response.status === 200){
-                setIsAuthenticated(true);
-                setUser(response.data.user);
-                setToken(response.data.token);
+                setUsername(response.data.username);
+                localStorage.setItem('token', response.data.token);
                 navigate('/');
             }
         }catch(error){
@@ -28,14 +34,13 @@ export const AuthProvider = ({children}) => {
     }
 
     const logout = () => {
-        setIsAuthenticated(false);
-        setUser("");
-        setToken("");
+        setUsername("");
+        localStorage.removeItem('token');
         navigate('/login');
     }
 
     return (
-        <AuthContext.Provider value={{login, logout, isAuthenticated, user, token}}>
+        <AuthContext.Provider value={{login, logout, username}}>
             {children}
         </AuthContext.Provider>
     )

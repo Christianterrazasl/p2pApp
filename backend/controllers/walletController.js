@@ -2,7 +2,7 @@ const {Wallet} = require('../models/index');
 
 exports.getWalletsByUserId = async (req, res) => {
     try{
-        const userId = req.params.userId;
+        const userId = req.user.id;
         const wallets = await Wallet.findAll({where: {userId}});
         res.status(200).json(wallets);
     }

@@ -1,23 +1,31 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useAuth } from '../hooks/AuthContext'
 import { useNavigate } from 'react-router-dom'
 
 function HomePage() {
 
     const { user, isAuthenticated } = useAuth();
+    const [wallets, setWallets] = useState([]);
     const navigate = useNavigate();
 
     useEffect(()=>{
-        if(!isAuthenticated){
+        const token = localStorage.getItem('token');
+        if(!token){
             navigate('/login');
         }
-    }, [isAuthenticated]);
+    });
 
     useEffect(()=>{
         const fetchWallets = async () => {
-            const response = await axios.get('http://localhost:3000/api/wallets', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const token = localStorage.getItem('token');
+            if(token){
+                const response = await axios.get('http://localhost:3000/api/wallets', {
+                    headers: { Authorization: token }
+                });
+                setWallets(response.data);
+            }else{
+                navigate('/login');
+            }
         }
     }, []);
 
@@ -27,6 +35,12 @@ function HomePage() {
             <h1 className='text-4xl font-bold text-gray-600'>Bienvenido,  <span className='text-yellow-500'>{user? user : "usuario"}</span></h1>
             <div className='w-full p-10 text-start'>
                 <h2 className='text-2xl'>Tus billeteras</h2>
+                {wallets.map((wallet)=>(
+                    <div key={wallet.id}>
+                        <h3>{wallet.currencyId}</h3>
+                        <p>{wallet.balance}</p>
+                    </div>
+                ))}
 
             </div>
         </div>

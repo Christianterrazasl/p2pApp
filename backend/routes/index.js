@@ -12,8 +12,8 @@ router.get('/users', userController.getAllUsers);
 router.get('/currency', currencyController.getAllCurrencies);
 router.post('/currency', currencyController.createCurrency);
 
-router.get('/wallet/:userId', walletController.getWalletsByUserId);
-router.post('/wallet', walletController.createWallet);
+router.get('/wallet', requireAuth, walletController.getWalletsByUserId);
+router.post('/wallet', requireAuth, walletController.createWallet);
 
 module.exports = router;
 

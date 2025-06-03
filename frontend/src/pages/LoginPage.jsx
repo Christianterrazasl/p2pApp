@@ -1,20 +1,23 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useAuth } from '../hooks/AuthContext'
 import FsLayout from '../layouts/FsLayout'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom';
 
 
 function LoginPage() {
 
-  const {login, logout, isAuthenticated, user} = useAuth();
+  const {login, logout} = useAuth();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
   
 
-  const handleSubmit = (e)=>{
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(username, password);
+    await login(username, password);
   }
   const handleUsernameChange = (e)=>{
     setUsername(e.target.value);
@@ -52,7 +55,7 @@ function LoginPage() {
             />
           </div>
           <button className='w-full text-gray-300 bg-gray-700 p-3 px-6 rounded-xl mt-5 hover:bg-black hover:cursor-pointer' type='button' onClick={handleSubmit}>Login</button>
-          <button className='w-full text-gray-300 bg-gray-700 p-3 px-6 rounded-xl mt-1 hover:bg-black hover:cursor-pointer' type='button' onClick={handleRegister}>Register</button>
+          <button className='w-full text-gray-300 bg-gray-700 p-3 px-6 rounded-xl mt-1 hover:bg-black hover:cursor-pointer' type='button' onClick={navigate("/register-page")}>Register</button>
         </form>
     </FsLayout>
       

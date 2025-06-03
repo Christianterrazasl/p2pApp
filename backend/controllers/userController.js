@@ -42,7 +42,7 @@ exports.loginUser = async (req, res) => {
         }
         const generatedToken = generateToken(user.id);
         const authToken = await AuthToken.create({userId: user.id, token: generatedToken});
-        res.status(200).json({token: authToken.token});
+        res.status(200).json({token: authToken.token, username: user.username});
     }
     catch(error){
         return res.status(500).send("Error logging in")
@@ -64,3 +64,13 @@ exports.getAllUsers = async (req, res) => {
     res.status(200).json(users);
 }
 
+
+exports.getUserByToken = async (req, res) => {
+    const token = req.body.token;
+    const authToken = await AuthToken.findOne({where: {token}});
+    if(!authToken){
+        return res.status(401).json({message: 'Invalid token'});
+    }
+    const user = await User.findOne({where: {id: authToken.userId}});
+    return res.status(200).json(user);
+}
