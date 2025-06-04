@@ -54,6 +54,10 @@ Transfer.belongsTo(Currency, {foreignKey: 'receiverCurrencyId'});
 Currency.hasMany(Post, {foreignKey: 'currencyId'});
 Post.belongsTo(Currency, {foreignKey: 'currencyId'});
 
+Wallet.belongsTo(Currency, { foreignKey: 'currencyId' });
+Currency.hasMany(Wallet, { foreignKey: 'currencyId' });
+
+
 async function syncModels() {
     try{
         await sequelize.sync({alter: true});

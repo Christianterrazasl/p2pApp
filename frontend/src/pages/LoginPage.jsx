@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { useAuth } from '../hooks/AuthContext'
 import FsLayout from '../layouts/FsLayout'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
@@ -7,18 +6,35 @@ import { useNavigate } from 'react-router-dom';
 
 function LoginPage() {
 
-  const {login, logout} = useAuth();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
 
   const navigate = useNavigate();
   
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await login(username, password);
-  }
+    
+    await axios.post('http://localhost:3000/api/login', {username, password})
+      .then(response => {
+        if(response.status === 200){
+          localStorage.setItem('token', response.data.token);
+          const user = response.data.user;
+          delete user.password;
+          localStorage.setItem('user', JSON.stringify(user));
+          navigate('/');
+        }else{
+          setError(true);
+        }
+      })
+      .catch(error => {
+        console.error(error);
+        setError(true);
+      })
+    }
+  
   const handleUsernameChange = (e)=>{
     setUsername(e.target.value);
   }
@@ -27,7 +43,7 @@ function LoginPage() {
   }
   const handleRegister = (e)=>{
     e.preventDefault();
-    console.log(username, password);
+    navigate("/register-page");
   }
 
   return (
@@ -53,9 +69,10 @@ function LoginPage() {
               value={password}
               onChange={handlePasswordChange}
             />
+            {error && <p className='text-red-500'>Error al iniciar sesion</p>}
           </div>
-          <button className='w-full text-gray-300 bg-gray-700 p-3 px-6 rounded-xl mt-5 hover:bg-black hover:cursor-pointer' type='button' onClick={handleSubmit}>Login</button>
-          <button className='w-full text-gray-300 bg-gray-700 p-3 px-6 rounded-xl mt-1 hover:bg-black hover:cursor-pointer' type='button' onClick={navigate("/register-page")}>Register</button>
+          <button className='w-full text-gray-300 bg-gray-700 p-3 px-6 rounded-xl mt-5 hover:bg-black hover:cursor-pointer' type='button' onClick={(e)=>handleSubmit(e)}>Login</button>
+          <button className='w-full text-gray-300 bg-gray-700 p-3 px-6 rounded-xl mt-1 hover:bg-black hover:cursor-pointer' type='button' onClick={(e)=>handleRegister(e)}>Register</button>
         </form>
     </FsLayout>
       

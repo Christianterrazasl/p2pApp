@@ -1,12 +1,14 @@
-const {Wallet} = require('../models/index');
+const {Wallet, Currency} = require('../models/index');
+
 
 exports.getWalletsByUserId = async (req, res) => {
     try{
         const userId = req.user.id;
-        const wallets = await Wallet.findAll({where: {userId}});
+        const wallets = await Wallet.findAll({where: {userId}, include: {model: Currency, attributes: ['name']}});
         res.status(200).json(wallets);
     }
     catch(error){
+        console.error(error);
         res.status(500).send("Error fetching wallets");
     }
 }
