@@ -22,7 +22,10 @@ const Transfer = sequelize.define('Transfer', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    },{
+    date:{
+        type: DataTypes.DATE,
+        allowNull: false
+    }},{
         freezeTableName: true,  
         timestamps: false
     })

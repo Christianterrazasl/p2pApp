@@ -25,10 +25,9 @@ const RegisterPage = () => {
 
     const handleSubmit = (e)=>{
         e.preventDefault();
-        console.log(username, password);
         axios.post('http://localhost:3000/api/register', {username, password})
         .then(response => {
-            if(response.status === 200){
+            if(response.status === 201){
                 navigate('/login');
             }else{
                 setError(true);
@@ -36,6 +35,7 @@ const RegisterPage = () => {
         })
         .catch(error => {
             console.log(error);
+            setError(true);
         })
     }
 

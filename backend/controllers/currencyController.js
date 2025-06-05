@@ -23,4 +23,23 @@ exports.createCurrency = async (req, res) =>{
     }
 }
 
+exports.deleteCurrency = async (req, res) => {
+    try{
+        const {id} = req.params;
+        await Currency.destroy({where: {id}});
+        res.status(200).json({message: "Currency deleted"});
+    }catch(error){
+        return res.status(500).send("Error deleting currency");
+    }
+}
 
+exports.updateCurrency = async (req, res) => {
+    try{
+        const {id} = req.params;
+        const {name, symbol, usdValue} = req.body;
+        await Currency.update({name, symbol, usdValue}, {where: {id}});
+        res.status(200).json({message: "Currency updated"});
+    }catch(error){
+        return res.status(500).send("Error updating currency");
+    }
+}
